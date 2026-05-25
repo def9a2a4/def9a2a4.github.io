@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>def9a2a4 - Minecraft Plugins</title>
+<style>
+  @font-face {
+    font-family: 'Monocraft';
+    src: url('https://cdn.jsdelivr.net/gh/IdreesInc/Monocraft@main/dist/Monocraft-ttf/Monocraft.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Monocraft', monospace;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  header h1 {
+    font-size: 2rem;
+    color: #7fdbca;
+    margin-bottom: 0.25rem;
+  }
+
+  header .links {
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  header .links a {
+    color: #c0c0c0;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 4px 10px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  header .links a:hover { color: #7fdbca; border-color: #7fdbca; }
+  header .links img { opacity: 0.7; transition: opacity 0.2s; }
+  header .links a:hover img { opacity: 1; }
+
+  header .contact {
+    color: #666;
+    font-size: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  header .contact a {
+    color: #7fdbca;
+    text-decoration: none;
+  }
+
+  header .contact a:hover { text-decoration: underline; }
+
+  .grid {
+    max-width: 960px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  .card {
+    background: #16213e;
+    border: 1px solid #0f3460;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card { cursor: pointer; }
+  .card:hover { border-color: #7fdbca; }
+
+  .card-img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+    background: #0f1a2e;
+  }
+
+  .card-body {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  .card-header {
+    margin-bottom: 0.5rem;
+  }
+
+  .card-header a {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #7fdbca;
+    text-decoration: none;
+  }
+
+  .card-header a:hover { text-decoration: underline; }
+
+  .desc {
+    font-size: 0.8rem;
+    color: #b0b0b0;
+    line-height: 1.5;
+    flex: 1;
+  }
+
+  .desc a { color: #7fdbca; text-decoration: none; }
+  .desc a:hover { text-decoration: underline; }
+
+  .card-actions {
+    margin-top: 0.75rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    text-decoration: none;
+    font-family: inherit;
+    font-size: 0.75rem;
+    padding: 8px 12px;
+    border-radius: 5px;
+    transition: filter 0.2s, transform 0.1s;
+  }
+
+  .btn:hover { filter: brightness(1.2); transform: translateY(-1px); }
+
+  .btn-modrinth {
+    background: #1bd96a;
+    color: #0a0a0a;
+    font-weight: 700;
+  }
+
+  .btn-modrinth img { filter: brightness(0); }
+
+  .btn-secondary {
+    background: #1a1a2e;
+    color: #b0b0b0;
+    border: 1px solid #333;
+  }
+
+  .btn-secondary:hover { color: #e0e0e0; border-color: #555; }
+  .btn-secondary img { opacity: 0.6; transition: opacity 0.2s; }
+  .btn-secondary:hover img { opacity: 0.9; }
+
+  .btn-catalog {
+    grid-column: 1 / -1;
+    background: #7fdbca;
+    color: #0a0a0a;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 10px 12px;
+  }
+
+  .stats {
+    margin-top: 0.5rem;
+    font-size: 0.7rem;
+    color: #666;
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .stats a {
+    color: #666;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: color 0.2s;
+  }
+
+  .stats a:hover { color: #b0b0b0; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>def9a2a4 <span style="color:#666;font-weight:400">("def-nine")</span></h1>
+  <div class="links">
+    <a href="https://github.com/def9a2a4">
+      <img src="gh.svg" width="16" height="16" alt="">
+      github
+    </a>
+    <span style="color:#444">&middot;</span>
+    <a href="https://modrinth.com/user/def9a2a4">
+      <img src="mods.svg" width="16" height="16" alt="">
+      modrinth
+    </a>
+  </div>
+  <div class="contact">commissions, questions, bugs &mdash; <a id="email" href="#">loading...</a></div>
+</header>
+
+<div class="grid">
+
+  <div class="card" data-repo="BlockShips">
+    <img class="card-img" src="https://raw.githubusercontent.com/def9a2a4/BlockShips/main/docs/assets/main.png" alt="BlockShips">
+    <div class="card-body">
+      <div class="card-header">
+        <a href="https://github.com/def9a2a4/BlockShips">BlockShips</a>
+      </div>
+      <p class="desc">Rideable, physics-enabled ships built from blocks. Sail the seas or take to the skies &mdash; no client-side mods required. Cannons, storage, lead points, health, and dynamic lighting.</p>
+      <div class="stats"></div>
+      <div class="card-actions">
+        <a class="btn btn-modrinth" href="https://modrinth.com/plugin/blockships">
+          <img src="mods.svg" width="14" height="14" alt="">
+          download on modrinth
+        </a>
+        <a class="btn btn-secondary" href="https://github.com/def9a2a4/BlockShips">
+          <img src="gh.svg" width="14" height="14" alt="">
+          source
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-repo="backrooms">
+    <img class="card-img" src="https://raw.githubusercontent.com/def9a2a4/backrooms/main/docs/assets/lobby-shaders.png" alt="backrooms">
+    <div class="card-body">
+      <div class="card-header">
+        <a href="https://github.com/def9a2a4/backrooms">backrooms</a>
+      </div>
+      <p class="desc">Survival horror plugin inspired by the Backrooms. 11 procedurally generated liminal levels with custom entities, atmospheric events, escalation system, and a custom advancement tree.</p>
+      <div class="stats"></div>
+      <div class="card-actions">
+        <a class="btn btn-modrinth" href="https://modrinth.com/plugin/the_backrooms">
+          <img src="mods.svg" width="14" height="14" alt="">
+          download on modrinth
+        </a>
+        <a class="btn btn-secondary" href="https://github.com/def9a2a4/backrooms">
+          <img src="gh.svg" width="14" height="14" alt="">
+          source
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-repo="HeadSmith">
+    <img class="card-img" src="https://raw.githubusercontent.com/def9a2a4/HeadSmith/main/docs/assets/header.png" alt="HeadSmith">
+    <div class="card-body">
+      <div class="card-header">
+        <a href="https://github.com/def9a2a4/HeadSmith">HeadSmith</a>
+      </div>
+      <p class="desc">3300+ survival-friendly decorative heads with crafting recipes. Books, candles, barrels, alphabet blocks, mini blocks, and more. Browse the full catalog at <a href="https://def9a2a4.github.io/HeadSmith/">def9a2a4.github.io/HeadSmith</a>.</p>
+      <div class="stats"></div>
+      <div class="card-actions">
+        <a class="btn btn-catalog" href="https://def9a2a4.github.io/HeadSmith/">head catalog</a>
+        <a class="btn btn-modrinth" href="https://modrinth.com/plugin/headsmith">
+          <img src="mods.svg" width="14" height="14" alt="">
+          download on modrinth
+        </a>
+        <a class="btn btn-secondary" href="https://github.com/def9a2a4/HeadSmith">
+          <img src="gh.svg" width="14" height="14" alt="">
+          source
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-repo="DynLight">
+    <img class="card-img" src="https://raw.githubusercontent.com/def9a2a4/DynLight/main/docs/image.png" alt="DynLight">
+    <div class="card-body">
+      <div class="card-header">
+        <a href="https://github.com/def9a2a4/DynLight">DynLight</a>
+      </div>
+      <p class="desc">Dynamic entity-based lighting with a plugin API. Held items, dropped items, and burning mobs glow. Water sensitivity, async rendering, per-player toggle. Scoreboard tag integration.</p>
+      <div class="stats"></div>
+      <div class="card-actions">
+        <a class="btn btn-modrinth" href="https://modrinth.com/plugin/dynlight">
+          <img src="mods.svg" width="14" height="14" alt="">
+          download on modrinth
+        </a>
+        <a class="btn btn-secondary" href="https://github.com/def9a2a4/DynLight">
+          <img src="gh.svg" width="14" height="14" alt="">
+          source
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-repo="Ropes">
+    <img class="card-img" src="https://raw.githubusercontent.com/def9a2a4/Ropes/main/docs/assets/rope_coil.gif" alt="Ropes">
+    <div class="card-body">
+      <div class="card-header">
+        <a href="https://github.com/def9a2a4/Ropes">Ropes</a>
+      </div>
+      <p class="desc">Climbable ropes and rope arrows. Craft rope coils, place them to hang down, or shoot rope arrows from a bow to place ropes at a distance.</p>
+      <div class="stats"></div>
+      <div class="card-actions">
+        <a class="btn btn-modrinth" href="https://modrinth.com/plugin/ropes">
+          <img src="mods.svg" width="14" height="14" alt="">
+          download on modrinth
+        </a>
+        <a class="btn btn-secondary" href="https://github.com/def9a2a4/Ropes">
+          <img src="gh.svg" width="14" height="14" alt="">
+          source
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-repo="Pipes">
+    <img class="card-img" src="https://raw.githubusercontent.com/def9a2a4/Pipes/main/docs/assets/demo-1.png" alt="Pipes">
+    <div class="card-body">
+      <div class="card-header">
+        <a href="https://github.com/def9a2a4/Pipes">Pipes</a>
+      </div>
+      <p class="desc">Item transport pipes for transferring items between containers. Regular pipes pull and push, corner pipes change direction. Multiple material variants with configurable speeds.</p>
+      <div class="stats"></div>
+      <div class="card-actions">
+        <a class="btn btn-modrinth" href="https://modrinth.com/plugin/pipes">
+          <img src="mods.svg" width="14" height="14" alt="">
+          download on modrinth
+        </a>
+        <a class="btn btn-secondary" href="https://github.com/def9a2a4/Pipes">
+          <img src="gh.svg" width="14" height="14" alt="">
+          source
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-repo="Yeetables">
+    <div class="card-body">
+      <div class="card-header">
+        <a href="https://github.com/def9a2a4/Yeetables">Yeetables</a>
+      </div>
+      <p class="desc">Data-driven throwable items. Bricks, slimeballs, grappling hooks, chorus fruit teleports, bombs, and more. Configurable physics, abilities, and rendering &mdash; all defined in YAML.</p>
+      <div class="stats"></div>
+      <div class="card-actions">
+        <a class="btn btn-modrinth" href="https://modrinth.com/plugin/yeetables">
+          <img src="mods.svg" width="14" height="14" alt="">
+          download on modrinth
+        </a>
+        <a class="btn btn-secondary" href="https://github.com/def9a2a4/Yeetables">
+          <img src="gh.svg" width="14" height="14" alt="">
+          source
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" data-repo="RedstoneDisplays">
+    <img class="card-img" src="https://raw.githubusercontent.com/def9a2a4/RedstoneDisplays/main/docs/assets/indicators-lectern.png" alt="RedstoneDisplays">
+    <div class="card-body">
+      <div class="card-header">
+        <a href="https://github.com/def9a2a4/RedstoneDisplays">RedstoneDisplays</a>
+      </div>
+      <p class="desc">Redstone-powered display indicators &mdash; custom heads that change appearance based on signal strength (0&ndash;15). Digital, binary, and panel styles. Extended power detection through walls.</p>
+      <div class="stats"></div>
+      <div class="card-actions">
+        <a class="btn btn-modrinth" href="https://modrinth.com/plugin/redstonedisplays">
+          <img src="mods.svg" width="14" height="14" alt="">
+          download on modrinth
+        </a>
+        <a class="btn btn-secondary" href="https://github.com/def9a2a4/RedstoneDisplays">
+          <img src="gh.svg" width="14" height="14" alt="">
+          source
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // email obfuscation
+  const e = document.getElementById('email');
+  const u = 'def9a2a4', d = 'd3420b8b7fe04.name';
+  e.href = 'mailto:' + u + '@' + d;
+  e.textContent = u + '@' + d;
+
+  // card clicks — navigate to github unless clicking a button/link inside
+  document.querySelectorAll('.card[data-repo]').forEach(card => {
+    card.addEventListener('click', ev => {
+      if (ev.target.closest('a')) return;
+      window.open('https://github.com/def9a2a4/' + card.dataset.repo, '_blank');
+    });
+  });
+
+  // live stats
+  const repos = document.querySelectorAll('.card[data-repo]');
+  const names = [...repos].map(c => c.dataset.repo);
+
+  Promise.all(names.map(name =>
+    fetch(`https://api.github.com/repos/def9a2a4/${name}`)
+      .then(r => r.ok ? r.json() : null)
+      .catch(() => null)
+  )).then(results => {
+    results.forEach((data, i) => {
+      if (!data) return;
+      const name = names[i];
+      const el = repos[i].querySelector('.stats');
+      const parts = [];
+      if (data.stargazers_count > 0)
+        parts.push(`<a href="https://github.com/def9a2a4/${name}">&#9733; ${data.stargazers_count}</a>`);
+      if (data.open_issues_count > 0)
+        parts.push(`<a href="https://github.com/def9a2a4/${name}/issues">${data.open_issues_count} issues</a>`);
+      if (parts.length) el.innerHTML = parts.join('');
+    });
+  });
+</script>
+
+</body>
+</html>
