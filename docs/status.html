@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>def9a2a4 - Plugin Status</title>
+<style>
+  @font-face {
+    font-family: 'Monocraft';
+    src: url('https://cdn.jsdelivr.net/gh/IdreesInc/Monocraft@main/dist/Monocraft-ttf/Monocraft.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: monospace;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-family: 'Monocraft', monospace;
+  }
+
+  header h1 {
+    font-size: 1.6rem;
+    color: #7fdbca;
+    margin-bottom: 0.5rem;
+  }
+
+  header h1 a { color: inherit; text-decoration: none; }
+
+  header .meta {
+    color: #666;
+    font-size: 0.75rem;
+  }
+
+  header button {
+    font: inherit;
+    color: #c0c0c0;
+    background: none;
+    border: 1px solid #333;
+    border-radius: 5px;
+    padding: 2px 8px;
+    margin-left: 0.5rem;
+    cursor: pointer;
+  }
+
+  header button:hover { color: #7fdbca; border-color: #7fdbca; }
+
+  .table-wrap {
+    max-width: 1400px;
+    margin: 0 auto;
+    overflow-x: auto;
+    border: 1px solid #0f3460;
+    border-radius: 8px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    background: #16213e;
+  }
+
+  th, td {
+    padding: 6px 10px;
+    text-align: left;
+    vertical-align: middle;
+    border-bottom: 1px solid #0f3460;
+    white-space: nowrap;
+  }
+
+  th {
+    color: #7fdbca;
+    font-weight: 600;
+    background: #121a33;
+  }
+
+  th small { color: #666; font-weight: 400; display: block; }
+
+  /* keep the plugin name visible while the table scrolls sideways on narrow screens */
+  th:first-child, td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    background: #16213e;
+    border-right: 1px solid #0f3460;
+  }
+
+  th:first-child { background: #121a33; }
+
+  tr:last-child td { border-bottom: none; }
+  tbody tr:hover, tbody tr:hover td:first-child { background: #1b2a4d; }
+  tr.group-start td { border-top: 2px solid #0f3460; }
+
+  a { color: #7fdbca; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .sub { color: #777; font-size: 0.72rem; display: block; }
+  .muted { color: #555; }
+  .warn { color: #f0c674; }
+  .bad { color: #f07178; }
+  .ok { color: #9ece6a; }
+  td img { display: block; height: 20px; }
+
+  footer {
+    max-width: 1400px;
+    margin: 1rem auto 0;
+    color: #555;
+    font-size: 0.72rem;
+    line-height: 1.5;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1><a href="./">def9a2a4</a> plugin status</h1>
+  <div class="meta"><span id="updated">loading...</span><button id="refresh" type="button">refresh</button></div>
+</header>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>plugin</th>
+        <th>version on main<small>from build.gradle.kts</small></th>
+        <th>modrinth latest</th>
+        <th>released</th>
+        <th>commits since<small>modrinth release</small></th>
+        <th>latest tag</th>
+        <th>last commit</th>
+        <th>issues</th>
+        <th>PRs</th>
+        <th>downloads</th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+</div>
+
+<footer>
+  Release info comes from Modrinth; "commits since" counts commits on the repo's default branch after the
+  latest Modrinth upload. The defCoreLib companions share one repo, so their GitHub columns are repo-wide.
+  Badges are from shields.io. GitHub API calls are cached for 15 minutes
+  (<span id="ratelimit">rate limit: ?</span>).
+</footer>
+
+<script>
+  const USER = 'def9a2a4';
+
+  // one row per Modrinth project; `ver` is the file on main that declares the version
+  const PLUGINS = [
+    { name: 'BlockShips',       slug: 'blockships',       repo: 'BlockShips', ver: 'blockships/build.gradle.kts' },
+    { name: 'backrooms',        slug: 'the_backrooms',    repo: 'backrooms',  ver: 'build.gradle.kts' },
+    { name: 'DynLight',         slug: 'dynlight',         repo: 'DynLight',   ver: 'build.gradle.kts' },
+    { name: 'Ropes',            slug: 'ropes',            repo: 'Ropes',      ver: 'build.gradle.kts' },
+    { name: 'Yeetables',        slug: 'yeetables',        repo: 'Yeetables',  ver: 'yeetables/build.gradle.kts' },
+    { name: 'DefCoreLib',       slug: 'defcorelib',       repo: 'defCoreLib', ver: 'build.gradle.kts' },
+    { name: 'VerticalSlabs',    slug: 'vslab',            repo: 'defCoreLib', ver: 'vslab/build.gradle.kts' },
+    { name: 'BetterBanners',    slug: 'betterbanners',    repo: 'defCoreLib', ver: 'bbanners/build.gradle.kts' },
+    { name: 'Mechanism',        slug: 'mechanism',        repo: 'defCoreLib', ver: 'mech/build.gradle.kts' },
+    { name: 'Pipes',            slug: 'pipes',            repo: 'defCoreLib', ver: 'pipes/build.gradle.kts' },
+    { name: 'RedstoneDisplays', slug: 'redstonedisplays', repo: 'defCoreLib', ver: 'rsd/build.gradle.kts' },
+    { name: 'Railbound',        slug: 'railbound',        repo: 'defCoreLib', ver: 'railbound/build.gradle.kts' },
+    { name: 'HeadSmith',        slug: 'headsmith',        repo: 'defCoreLib', ver: 'headsmith/build.gradle.kts' },
+  ];
+
+  const CACHE_MS = 15 * 60 * 1000;
+
+  function cached(key, fn) {
+    try {
+      const hit = JSON.parse(localStorage.getItem(key) || 'null');
+      if (hit && Date.now() - hit.t < CACHE_MS) return Promise.resolve(hit.v);
+    } catch (e) {}
+    return fn().then(v => {
+      // failures (null) are not cached, so a rate-limited load retries on the next visit
+      if (v != null) try { localStorage.setItem(key, JSON.stringify({ t: Date.now(), v })); } catch (e) {}
+      return v;
+    });
+  }
+
+  function clearCache() {
+    try {
+      Object.keys(localStorage).filter(k => k.startsWith('status:')).forEach(k => localStorage.removeItem(k));
+    } catch (e) {}
+  }
+
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+  function ago(iso) {
+    const s = (Date.now() - new Date(iso)) / 1000;
+    const units = [[31536000, 'y'], [2592000, 'mo'], [604800, 'w'], [86400, 'd'], [3600, 'h'], [60, 'm']];
+    for (const [n, u] of units) if (s >= n) return Math.floor(s / n) + u + ' ago';
+    return 'just now';
+  }
+
+  function badge(path, href, alt) {
+    return `<a href="${href}"><img src="https://img.shields.io/${path}${path.includes('?') ? '&' : '?'}style=flat-square&label=" alt="${alt}"></a>`;
+  }
+
+  // latest Modrinth version (newest by publish date)
+  function modrinthLatest(slug) {
+    return cached('status:mr:' + slug, () =>
+      fetch(`https://api.modrinth.com/v2/project/${slug}/version`)
+        .then(r => r.ok ? r.json() : [])
+        .then(vs => {
+          if (!vs.length) return null;
+          vs.sort((a, b) => new Date(b.date_published) - new Date(a.date_published));
+          const v = vs[0];
+          return { version: v.version_number, date: v.date_published, type: v.version_type, games: v.game_versions };
+        })
+        .catch(() => null));
+  }
+
+  // version declared on main (raw.githubusercontent is not rate limited like the API)
+  function mainVersion(p) {
+    return cached(`status:ver:${p.repo}/${p.ver}`, () =>
+      fetch(`https://raw.githubusercontent.com/${USER}/${p.repo}/HEAD/${p.ver}`)
+        .then(r => r.ok ? r.text() : '')
+        .then(t => (t.match(/^\s*version\s*=\s*"([^"]+)"/m) || [])[1] || null)
+        .catch(() => null));
+  }
+
+  let rateRemaining = null;
+
+  // commits on the default branch after `since`: request one per page and read the page count from Link
+  function commitsSince(repo, since) {
+    return cached(`status:cs:${repo}@${since}`, () =>
+      fetch(`https://api.github.com/repos/${USER}/${repo}/commits?since=${encodeURIComponent(since)}&per_page=1`)
+        .then(r => {
+          rateRemaining = r.headers.get('x-ratelimit-remaining') ?? rateRemaining;
+          if (!r.ok) return null;
+          const last = (r.headers.get('link') || '').match(/[?&]page=(\d+)>; rel="last"/);
+          return last ? Promise.resolve(+last[1]) : r.json().then(a => a.length);
+        })
+        .catch(() => null));
+  }
+
+  function gameRange(games) {
+    if (!games || !games.length) return '';
+    return games.length === 1 ? games[0] : `${games[0]} – ${games[games.length - 1]}`;
+  }
+
+  function renderRow(p, prev) {
+    const tr = document.createElement('tr');
+    if (prev && prev.repo !== p.repo) tr.className = 'group-start';
+    const gh = `https://github.com/${USER}/${p.repo}`;
+    tr.innerHTML = `
+      <td><a href="https://modrinth.com/plugin/${p.slug}">${esc(p.name)}</a><span class="sub"><a href="${gh}">${esc(p.repo)}</a></span></td>
+      <td class="c-main muted">…</td>
+      <td class="c-mr muted">…</td>
+      <td class="c-date muted">…</td>
+      <td class="c-since muted">…</td>
+      <td>${badge(`github/v/tag/${USER}/${p.repo}?sort=semver`, `${gh}/tags`, 'latest tag')}</td>
+      <td>${badge(`github/last-commit/${USER}/${p.repo}`, `${gh}/commits`, 'last commit')}</td>
+      <td>${badge(`github/issues/${USER}/${p.repo}`, `${gh}/issues`, 'issues')}</td>
+      <td>${badge(`github/issues-pr/${USER}/${p.repo}`, `${gh}/pulls`, 'PRs')}</td>
+      <td>${badge(`modrinth/dt/${p.slug}`, `https://modrinth.com/plugin/${p.slug}`, 'downloads')}</td>`;
+    return tr;
+  }
+
+  function load() {
+    const tbody = document.getElementById('rows');
+    tbody.innerHTML = '';
+    document.getElementById('updated').textContent = 'loading...';
+
+    const jobs = PLUGINS.map((p, i) => {
+      const tr = renderRow(p, PLUGINS[i - 1]);
+      tbody.appendChild(tr);
+      const cell = c => tr.querySelector('.' + c);
+
+      return Promise.all([modrinthLatest(p.slug), mainVersion(p)]).then(([mr, mainVer]) => {
+        if (mr) {
+          const type = mr.type !== 'release' ? ` <span class="sub">${esc(mr.type)}</span>` : '';
+          cell('c-mr').className = 'c-mr';
+          cell('c-mr').innerHTML = `<a href="https://modrinth.com/plugin/${p.slug}/versions">${esc(mr.version)}</a>${type}<span class="sub">MC ${esc(gameRange(mr.games))}</span>`;
+          const days = (Date.now() - new Date(mr.date)) / 86400000;
+          const age = days < 30 ? 'ok' : days < 90 ? 'warn' : 'bad';
+          cell('c-date').className = 'c-date ' + age;
+          cell('c-date').innerHTML = `${esc(mr.date.slice(0, 10))}<span class="sub ${age}">${ago(mr.date)}</span>`;
+        } else {
+          cell('c-mr').innerHTML = '<span class="bad">not found</span>';
+          cell('c-date').textContent = '';
+        }
+
+        if (mainVer) {
+          const unreleased = mr && mainVer !== mr.version;
+          cell('c-main').className = 'c-main' + (unreleased ? ' warn' : '');
+          cell('c-main').innerHTML = esc(mainVer) + (unreleased ? '<span class="sub">unreleased</span>' : '');
+        } else {
+          cell('c-main').textContent = '?';
+        }
+
+        if (!mr) { cell('c-since').textContent = ''; return; }
+        return commitsSince(p.repo, mr.date).then(n => {
+          const c = cell('c-since');
+          if (n == null) { c.textContent = '?'; return; }
+          c.className = 'c-since ' + (n === 0 ? 'ok' : n >= 20 ? 'bad' : 'warn');
+          c.innerHTML = `<a style="color:inherit" href="https://github.com/${USER}/${p.repo}/commits?since=${mr.date.slice(0, 10)}">${n}</a>`;
+        });
+      });
+    });
+
+    Promise.all(jobs).then(() => {
+      document.getElementById('updated').textContent = 'updated ' + new Date().toLocaleString();
+      if (rateRemaining != null)
+        document.getElementById('ratelimit').textContent = +rateRemaining === 0
+          ? 'GitHub API rate limit hit; commit counts show ? until it resets within the hour'
+          : `GitHub API calls left this hour: ${rateRemaining}`;
+    });
+  }
+
+  document.getElementById('refresh').addEventListener('click', () => { clearCache(); load(); });
+  load();
+</script>
+
+</body>
+</html>
