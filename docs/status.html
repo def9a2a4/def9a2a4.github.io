@@ -132,7 +132,7 @@
     <thead>
       <tr>
         <th>plugin</th>
-        <th>version on main<small>from build.gradle.kts</small></th>
+        <th>version on main<small>from build.gradle.kts / pom.xml</small></th>
         <th>modrinth latest</th>
         <th>released</th>
         <th>commits since<small>modrinth release</small></th>
@@ -157,9 +157,10 @@
 <script>
   const USER = 'def9a2a4';
 
-  // one row per Modrinth project; `ver` is the file on main that declares the version
+  // one row per Modrinth project; `ver` is the file on the default branch that declares the version
   const PLUGINS = [
     { name: 'BlockShips',       slug: 'blockships',       repo: 'BlockShips', ver: 'blockships/build.gradle.kts' },
+    { name: 'GiantTreesX',      slug: 'gianttreesx',      repo: 'GiantTreesX', ver: 'pom.xml' },
     { name: 'backrooms',        slug: 'the_backrooms',    repo: 'backrooms',  ver: 'build.gradle.kts' },
     { name: 'DynLight',         slug: 'dynlight',         repo: 'DynLight',   ver: 'build.gradle.kts' },
     { name: 'Ropes',            slug: 'ropes',            repo: 'Ropes',      ver: 'build.gradle.kts' },
@@ -226,7 +227,8 @@
     return cached(`status:ver:${p.repo}/${p.ver}`, () =>
       fetch(`https://raw.githubusercontent.com/${USER}/${p.repo}/HEAD/${p.ver}`)
         .then(r => r.ok ? r.text() : '')
-        .then(t => (t.match(/^\s*version\s*=\s*"([^"]+)"/m) || [])[1] || null)
+        // build.gradle.kts: version = "x"; pom.xml: the first <version> is the project's
+        .then(t => (t.match(/^\s*version\s*=\s*"([^"]+)"/m) || t.match(/<version>([^<]+)<\/version>/) || [])[1] || null)
         .catch(() => null));
   }
 
